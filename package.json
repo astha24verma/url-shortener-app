@@ -1,0 +1,40 @@
+{
+  "name": "url-shortener-app",
+  "version": "1.0.0",
+  "description": "A URL shortener application with authentication, analytics, and rate limiting.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --exit --timeout 10000 test/**/*.test.js",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "astha",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "device-detector-js": "^3.0.3",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "express-useragent": "^1.0.15",
+    "geoip-lite": "^1.4.10",
+    "google-auth-library": "^9.15.0",
+    "ioredis": "^5.4.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.9.5",
+    "nanoid": "^3.3.4",
+    "redis": "^4.7.0"
+  },
+  "devDependencies": {
+    "chai": "^4.3.7",
+    "ioredis-mock": "^8.7.0",
+    "mocha": "^10.2.0",
+    "mongodb-memory-server": "^8.12.2",
+    "nodemon": "^3.1.9",
+    "sinon": "^19.0.2",
+    "supertest": "^6.3.3",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^4.6.3"
+  }
+}
