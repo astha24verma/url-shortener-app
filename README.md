@@ -1,8 +1,8 @@
-﻿# Custom URL Shortener API
+﻿# URL Shortener API
 
 ## Overview
 
-This project implements a scalable Custom URL Shortener API that includes user authentication via Google Sign-In, advanced analytics, and rate limiting. The solution allows users to create short URLs for long and complex URLs, categorize them under specific topics, and track detailed analytics for individual and grouped URLs.
+This project implements a scalable URL Shortener API that includes user authentication via Google Sign-In, advanced analytics, and rate limiting. The solution allows users to create short URLs for long and complex URLs, categorize them under specific topics, and track detailed analytics for individual and grouped URLs.
 
 ## Features
 
