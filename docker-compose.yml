@@ -7,14 +7,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - MONGODB_URI=mongodb+srv://asthaverma2499:I61Yt0uZNGE4AYwf@cluster0.ksvbxsm.mongodb.net/url-shortener-app?retryWrites=true&w=majority&appName=Cluster0
-      - JWT_SECRET=astha$#24@dev
-      - PORT=5000
-      - GOOGLE_CLIENT_ID=657622907560-bijjbnf2hmt0cuaf6pbf7inoarggo7ls.apps.googleusercontent.com
-      - NODE_ENV=development
+    env_file:
+      - .env
     depends_on:
       - redis
 
