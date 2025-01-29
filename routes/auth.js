@@ -1,10 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {
-    googleLogin,
-    getCurrentUser,
-    logout
-} = require('../controllers/auth');
+const authController = require('../controllers/auth');
 const { authenticateUser } = require('../middleware/auth');
 
 /**
@@ -69,12 +65,12 @@ const { authenticateUser } = require('../middleware/auth');
  */
 
 
+module.exports = (redis) => {
+    authController.initializeRedis(redis);
 
-// Google OAuth Login
-router.post('/google', googleLogin);
+    router.post('/google', authController.googleLogin);
+    router.get('/me', authenticateUser, authController.getCurrentUser);
+    router.post('/logout', authenticateUser, authController.logout);
 
-router.get('/me', authenticateUser, getCurrentUser);
-
-router.post('/logout', authenticateUser, logout);
-
-module.exports = router;
+    return router;
+};

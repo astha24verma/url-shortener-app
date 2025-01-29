@@ -50,7 +50,7 @@ if (process.env.NODE_ENV === 'test') {
 
 // Routes
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use('/auth', authRoutes);
+app.use('/auth', authRoutes(redis));
 app.use('/api', urlRoutes(redis));
 
 // Global Error Handler

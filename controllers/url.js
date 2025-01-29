@@ -11,7 +11,7 @@ const initializeRedis = (redisClient) => {
     redis = redisClient;
 };
 
-const CACHE_DURATION = 24 * 60 * 60; // 24 hours in seconds
+const CACHE_DURATION = 6 * 60 * 60; // 6 hours in seconds
 
 exports.createShortUrl = async (req, res) => {
     try {

@@ -4,6 +4,12 @@ const jwt = require('jsonwebtoken');
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
+let redis;
+
+const initializeRedis = (redisClient) => {
+    redis = redisClient;
+};
+
 exports.googleLogin = async (req, res) => {
     try {
         const { authorization } = req.headers;
@@ -65,19 +71,18 @@ exports.getCurrentUser = async (req, res) => {
     }
 };
 
-const redis = require('ioredis');
-const redisClient = new redis();
-
 exports.logout = async (req, res) => {
     try {
         const token = req.header('Authorization')?.replace('Bearer ', '');
         if (token) {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             const expiration = decoded.exp - Math.floor(Date.now() / 1000);
-            await redisClient.setex(`blacklist:${token}`, expiration, token);
+            await redis.setex(`blacklist:${token}`, expiration, token);
         }
         res.json({ message: 'Logout successful' });
     } catch (error) {
         res.status(500).json({ message: 'Logout failed', error: error.message });
     }
 };
+
+exports.initializeRedis = initializeRedis;
