@@ -35,18 +35,27 @@ if (process.env.NODE_ENV === 'test') {
         port: process.env.REDIS_PORT || 6379,
         showFriendlyErrorStack: false,
         retryStrategy(times) {
-            const maxDelay = 5000; // Maximum delay of 5 seconds
-            const delay = Math.min(times * 500, maxDelay);
+            const maxAttempts = 5;
+            const maxDelay = 10000;
+            const delay = Math.min(times * 1000, maxDelay);
+
+            if (times >= maxAttempts) {
+                console.error('Max retries reached. Could not connect to Redis.');
+                return null;
+            }
+
             console.log(`Retrying Redis connection in ${delay}ms...`);
             return delay;
         },
-        maxRetriesPerRequest: 20
+        maxRetriesPerRequest: 5,
+    });
+
+    redis.on('error', (err) => {
+        console.error('Redis Error:', err.message);
     });
 
     redis.on('connect', () => console.log('Redis Connected'));
-    redis.on('error', (err) => console.error('Redis Error:', err.message));
 }
-
 
 // Routes
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
