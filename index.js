@@ -32,53 +32,35 @@ if (process.env.NODE_ENV === 'test') {
     const Redis = require('ioredis');
 
     const redisConfig = process.env.REDIS_URL
-        ? // Use Redis URL if available (production)
-        {
-            url: process.env.REDIS_URL,
-            maxRetriesPerRequest: 5,
-            enableReadyCheck: true,
-        }
-        : // Otherwise, use host/port configuration (local)
-        {
+        ? { url: process.env.REDIS_URL }
+        : {
             host: process.env.REDIS_HOST || 'redis',
-            port: process.env.REDIS_PORT || 6379,
-            maxRetriesPerRequest: 5,
+            port: process.env.REDIS_PORT || 6379
         };
 
     redis = new Redis({
         ...redisConfig,
-        showFriendlyErrorStack: process.env.NODE_ENV !== 'production',
+        maxRetriesPerRequest: 5,
         retryStrategy(times) {
-            const maxAttempts = 5;
-            const maxDelay = 10000;
-            const delay = Math.min(times * 1000, maxDelay);
-
-            if (times >= maxAttempts) {
+            if (times >= 5) {
                 console.error('Max retries reached. Could not connect to Redis.');
-                return null;
+                return null; // Stop retrying after 5 attempts
             }
-
+            const delay = Math.min(times * 1000, 10000);
             console.log(`Retrying Redis connection in ${delay}ms...`);
             return delay;
         },
     });
-
-    redis.on('error', (err) => {
-        console.error('Redis Error:', err.message);
-    });
-
-    redis.on('connect', () => {
-        console.log('Redis Connected');
-        // Log connection details in non-production environments
-        if (process.env.NODE_ENV !== 'production') {
-            console.log('Redis connection details:', {
-                host: redis.options.host,
-                port: redis.options.port,
-                url: process.env.REDIS_URL ? '(using REDIS_URL)' : undefined
-            });
-        }
-    });
 }
+
+redis.on('error', (err) => {
+    console.error('Redis Error:', err.message);
+});
+
+redis.on('connect', () => {
+    console.log('✅ Redis Connected!');
+});
+
 
 // Routes
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
