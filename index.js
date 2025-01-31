@@ -30,24 +30,18 @@ if (process.env.NODE_ENV === 'test') {
     console.log('Using mock Redis for testing');
 } else {
     const Redis = require('ioredis');
-
-    const redisConfig = process.env.REDIS_URL
-        ? { url: process.env.REDIS_URL }
-        : {
-            host: process.env.REDIS_HOST || 'redis',
-            port: process.env.REDIS_PORT || 6379
-        };
-
-    redis = new Redis({
-        ...redisConfig,
+    redis = new Redis(process.env.REDIS_URL, {
         maxRetriesPerRequest: 5,
+        tls: {
+            rejectUnauthorized: false // Required for Render's Redis SSL connection
+        },
         retryStrategy(times) {
             if (times >= 5) {
                 console.error('Max retries reached. Could not connect to Redis.');
                 return null; // Stop retrying after 5 attempts
             }
             const delay = Math.min(times * 1000, 10000);
-            console.log(`Retrying Redis connection in ${delay}ms...`);
+            console.log(`Retrying Redis connection in ${delay}ms ...`);
             return delay;
         },
     });
@@ -58,7 +52,7 @@ redis.on('error', (err) => {
 });
 
 redis.on('connect', () => {
-    console.log('✅ Redis Connected!');
+    console.log('✅ Redis Connected');
 });
 
 
