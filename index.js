@@ -30,10 +30,24 @@ if (process.env.NODE_ENV === 'test') {
     console.log('Using mock Redis for testing');
 } else {
     const Redis = require('ioredis');
+
+    const redisConfig = process.env.REDIS_URL
+        ? // Use Redis URL if available (production)
+        {
+            url: process.env.REDIS_URL,
+            maxRetriesPerRequest: 5,
+            enableReadyCheck: true,
+        }
+        : // Otherwise, use host/port configuration (local)
+        {
+            host: process.env.REDIS_HOST || 'redis',
+            port: process.env.REDIS_PORT || 6379,
+            maxRetriesPerRequest: 5,
+        };
+
     redis = new Redis({
-        host: process.env.REDIS_HOST || 'redis',
-        port: process.env.REDIS_PORT || 6379,
-        showFriendlyErrorStack: false,
+        ...redisConfig,
+        showFriendlyErrorStack: process.env.NODE_ENV !== 'production',
         retryStrategy(times) {
             const maxAttempts = 5;
             const maxDelay = 10000;
@@ -47,14 +61,23 @@ if (process.env.NODE_ENV === 'test') {
             console.log(`Retrying Redis connection in ${delay}ms...`);
             return delay;
         },
-        maxRetriesPerRequest: 5,
     });
 
     redis.on('error', (err) => {
         console.error('Redis Error:', err.message);
     });
 
-    redis.on('connect', () => console.log('Redis Connected'));
+    redis.on('connect', () => {
+        console.log('Redis Connected');
+        // Log connection details in non-production environments
+        if (process.env.NODE_ENV !== 'production') {
+            console.log('Redis connection details:', {
+                host: redis.options.host,
+                port: redis.options.port,
+                url: process.env.REDIS_URL ? '(using REDIS_URL)' : undefined
+            });
+        }
+    });
 }
 
 // Routes
